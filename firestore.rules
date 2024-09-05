@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Match the userProfiles collection
+    match /userProfiles/{username} {
+
+      // Allow anyone to read user data
+      allow read: if true;
+
+      // Only authenticated users can write data
+      allow create, update, delete, write : if request.auth != null;
+    }
+     // Match the users collection
+      match /users/{userId} {
+      allow read, update, delete, write: if request.auth != null && request.auth.uid == userId;
+    // Applies to writes nonexistent user or users that doesn't have an account.
+      allow create: if request.auth != null;
+    }
+  }
+}
